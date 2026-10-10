@@ -1,0 +1,6 @@
+{
+  "title": "Audio announcement (audio round-trip)",
+  "task_type": "audio",
+  "description": "Write a 40-60 word spoken announcement welcoming attendees to HackRU and telling them the demo expo starts at 10 AM in the atrium. Plain sentences, no bullet points. The verifier compares the transcript of the generated audio to the script and reports word-level differences.",
+  "rubric": "Transcript must mention HackRU, 10 AM, and the atrium; 40-60 words."
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Date parser (coding, with tests)",
+  "task_type": "coding",
+  "description": "Write a Python function parse_date(s: str) -> datetime.date that accepts these formats and returns a date: '2024-01-05', '01/05/2024' (MM/DD/YYYY), 'Jan 5 2024', 'January 5, 2024'. Raise ValueError for anything else. Return ONLY the code in one ```python block, including imports.",
+  "test_cases": [
+    {"call": "parse_date('2024-01-05')", "expected": "2024-01-05"},
+    {"call": "parse_date('01/05/2024')", "expected": "2024-01-05"},
+    {"call": "parse_date('Jan 5 2024')", "expected": "2024-01-05"},
+    {"call": "parse_date('January 5, 2024')", "expected": "2024-01-05"},
+    {"call": "(lambda: (parse_date('nope'), 'no error'))() if False else 'raised'", "expected": "raised"}
+  ]
+}

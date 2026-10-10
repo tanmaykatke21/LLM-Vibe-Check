@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
+/* LLMSquad is a light-theme app regardless of OS dark mode. */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
+
+/* React Flow surfaces */
+.react-flow { background: #fafafa; }
+.react-flow__minimap { background: #ffffff; }
+.react-flow__controls button { background: #ffffff; color: #171717; border-bottom: 1px solid #e5e7eb; }
+.react-flow__controls button:hover { background: #f3f4f6; }
+.react-flow__edge-text { fill: #171717; }
+.react-flow__edge-textbg { fill: #ffffff; }
+
+/* form controls always light */
+input, textarea, select, button { color: #171717; background-color: #ffffff; }
+button.bg-black { color: #ffffff; background-color: #000000; }
+button.bg-green-600, button.bg-blue-600, button.bg-red-600 { color: #ffffff; }
+button.bg-green-600 { background-color: #16a34a; } button.bg-blue-600 { background-color: #2563eb; } button.bg-red-600 { background-color: #dc2626; }
