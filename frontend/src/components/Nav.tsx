@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const LINKS = [["/builder", "Build"], ["/compare", "Compare"], ["/skills", "Skills"]] as const;
+// Top navigation (Docs added Oct 11)
+const LINKS = [["/builder", "Build"], ["/compare", "Compare"], ["/skills", "Skills"], ["/docs", "Docs"]] as const;
 
 export default function Nav() {
   const path = usePathname();
@@ -26,3 +27,4 @@ export default function Nav() {
     </nav>
   );
 }
+
