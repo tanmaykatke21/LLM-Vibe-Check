@@ -17,6 +17,8 @@ export const api = {
   createSession: (b: { name: string; graph: Graph }) => fetch(`${API}/sessions`, { method: "POST", headers: h, body: JSON.stringify(b) }).then(j<Session>),
   updateSession: (id: string, b: { name: string; graph: Graph }) => fetch(`${API}/sessions/${id}`, { method: "PUT", headers: h, body: JSON.stringify(b) }).then(j<Session>),
   validateGraph: (g: Graph) => fetch(`${API}/graph/validate`, { method: "POST", headers: h, body: JSON.stringify(g) }).then(j<{ valid: boolean; problems: string[] }>),
+  repeat: (session_id: string, task_id: string, n: number) =>
+    fetch(`${API}/runs/repeat`, { method: "POST", headers: h, body: JSON.stringify({ session_id, task_id, n }) }).then(j<{ runs: { id: string }[] }>),
   startRun: (session_id: string, task_id: string) => fetch(`${API}/runs`, { method: "POST", headers: h, body: JSON.stringify({ session_id, task_id }) }).then(j<Run>),
   runs: (task_id?: string) => fetch(`${API}/runs${task_id ? `?task_id=${task_id}` : ""}`).then(j<Run[]>),
   run: (id: string) => fetch(`${API}/runs/${id}`).then(j<Run>),
@@ -58,12 +60,19 @@ export type Evaluation = { completion_status: string; completion_reason: string;
   judge_report?: { nodes: { node_id: string; accuracy_score: number; did_its_job: boolean; issues: string[]; rationale: string }[];
     final: { accuracy_score: number; complete: boolean; missing: string[]; rationale: string } };
   feedback?: { parsed_verdict: Record<string, unknown> } };
+export type JudgeRow = { node_id?: string; accuracy_score?: number; did_its_job?: boolean; complete?: boolean; issues?: string[]; rationale?: string; judge_model?: string; judge_cost_usd?: string | number };
 export type EvalData = { evaluation?: { completion_status: string; completion_reason: string; composite_score: number; test_pass_rate?: number };
-  judge: { node_id?: string; accuracy_score?: number; did_its_job?: boolean; complete?: boolean; issues?: string[]; rationale?: string }[];
+  judge: JudgeRow[];
+  judge_panel?: JudgeRow[];
   human: { rating: number; feedback_text: string; feedback_quality?: string; agrees_with_judge?: boolean; parsed_verdict?: Record<string, unknown> }[] };
 export type ForkRow = { id: string; parent_run_id?: string; forked_from_node?: string; status: string; total_cost: string; depth: number; composite_score?: number; completion_status?: string };
-export type CompareRow = { id: string; session_name: string; status: string; total_cost: string; total_latency_ms: number; composite_score?: number;
-  completion_status?: string; final_judge_score?: number; test_pass_rate?: number; human_score?: number; interventions_count?: number; forked_from_node?: string };
+export type CompareNode = { node_id: string; role: string; node_kind: string; model_or_tool: string; calls: number; max_loop: number;
+  input_tokens: number; output_tokens: number; cost_usd: string | number; latency_ms: number; reused: boolean };
+export type CompareRow = { id: string; session_id: string; session_name: string; status: string; total_cost: string | number; total_latency_ms: number;
+  total_input_tokens?: number; total_output_tokens?: number; human_wait_ms?: number; created_at?: string; composite_score?: number;
+  completion_status?: string; final_judge_score?: number; test_pass_rate?: number; human_score?: number; interventions_count?: number;
+  forked_from_node?: string; quality_score?: number | null; cost_score?: number; speed_score?: number; effort_score?: number;
+  judge_spread?: number | string | null; judge_count?: number; nodes?: CompareNode[]; models?: string[]; llm_calls?: number; loops_used?: number };
 
 export const fmt$ = (v: string | number | undefined) => `$${Number(v ?? 0).toFixed(5)}`;
 export const fmtMs = (ms: number | undefined) => (ms ?? 0) >= 1000 ? `${((ms ?? 0) / 1000).toFixed(1)}s` : `${ms ?? 0}ms`;

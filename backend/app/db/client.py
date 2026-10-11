@@ -8,8 +8,11 @@ _pool: ConnectionPool | None = None
 def pool() -> ConnectionPool:
     global _pool
     if _pool is None:
-        _pool = ConnectionPool(DATABASE_URL, min_size=1, max_size=8,
-                               kwargs={"row_factory": dict_row, "autocommit": True})
+        # check: drop dead connections (e.g. after the Docker DB restarts) instead of handing them out
+        # timeout: fail in 5s with a clear error instead of hanging every request for 30s
+        _pool = ConnectionPool(DATABASE_URL, min_size=1, max_size=16, timeout=5,
+                               check=ConnectionPool.check_connection,
+                               kwargs={"row_factory": dict_row, "autocommit": True, "connect_timeout": 5})
     return _pool
 
 def q(sql: str, params=None):

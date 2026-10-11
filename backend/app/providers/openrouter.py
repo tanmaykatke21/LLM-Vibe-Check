@@ -19,6 +19,9 @@ class OpenRouterProvider(Provider):
             "temperature": float(params.get("temperature", 0.3)),
             "usage": {"include": True},
         }
+        # thinking models (GPT-5.x, Gemini 3.x, ...) spend max_tokens on hidden reasoning; cap it so an answer is left
+        if params.get("reasoning_effort"):
+            body["reasoning"] = {"effort": str(params["reasoning_effort"])}
         headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}",
                    "HTTP-Referer": "https://llmsquad.local", "X-Title": "LLMSquad"}
         t0 = time.perf_counter()
@@ -27,7 +30,10 @@ class OpenRouterProvider(Provider):
             r.raise_for_status()
             d = r.json()
         ms = int((time.perf_counter() - t0) * 1000)
-        text = d["choices"][0]["message"]["content"] or ""
+        choice = d["choices"][0]
+        text = choice["message"].get("content") or ""
+        if not text.strip() and choice.get("finish_reason") == "length":
+            text = "[no answer: the model used its whole token budget on reasoning - raise max_tokens or lower reasoning_effort]"
         u = d.get("usage") or {}
         it, ot = int(u.get("prompt_tokens", 0)), int(u.get("completion_tokens", 0))
         cached = int((u.get("prompt_tokens_details") or {}).get("cached_tokens", 0))

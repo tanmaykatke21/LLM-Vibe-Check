@@ -40,7 +40,12 @@ async def refresh_from_openrouter() -> int:
         return 0
 
 def price_for(model: str) -> tuple[float, float]:
-    return _live.get(model) or FALLBACK_PRICES.get(model) or (1.0, 5.0)
+    live = _live.get(model)
+    # router models (e.g. openrouter/auto) list price -1 = "depends on the model picked"; never bill negative.
+    # (known_models still returns the -1 so the UI can show "variable price"; OpenRouter's reported cost is used when present.)
+    if live and min(live) >= 0:
+        return live
+    return FALLBACK_PRICES.get(model) or (1.0, 5.0)
 
 def llm_cost(model: str, input_tokens: int, output_tokens: int, cached_tokens: int = 0) -> float:
     pin, pout = price_for(model)

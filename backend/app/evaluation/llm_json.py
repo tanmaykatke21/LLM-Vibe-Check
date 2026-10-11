@@ -3,11 +3,13 @@ import json, re
 from app.config import JUDGE_MODEL
 from app.providers.openrouter import OpenRouterProvider
 
-async def ask_json(system: str, user: str, model: str | None = None, max_tokens: int = 2000) -> tuple[dict, dict]:
+async def ask_json(system: str, user: str, model: str | None = None, max_tokens: int = 2000,
+                   reasoning_effort: str | None = None) -> tuple[dict, dict]:
     """Returns (parsed_json, meta{cost_usd, tokens, model})."""
     node = {"id": "judge", "kind": "llm", "model": model or JUDGE_MODEL, "role": "judge",
             "system_prompt": system + "\nRespond with ONLY a JSON object, no prose, no code fences.",
-            "params": {"max_tokens": max_tokens, "temperature": 0}}
+            "params": {"max_tokens": max_tokens, "temperature": 0,
+                       **({"reasoning_effort": reasoning_effort} if reasoning_effort else {})}}
     res = await OpenRouterProvider().run(node, user, [])
     text = res.output.strip()
     m = re.search(r"\{.*\}", text, re.S)

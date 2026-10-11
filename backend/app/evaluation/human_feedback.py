@@ -9,7 +9,7 @@ blamed_nodes: node ids the feedback implies were at fault (may be empty)."""
 
 async def parse_feedback(run_id: str, node_id: str | None, rating: int, complete: bool | None, text: str) -> dict:
     run = one("select final_output from runs where id=%s", (run_id,))
-    judge_final = one("select accuracy_score, complete from judge_results where run_id=%s and node_id is null", (run_id,))
+    judge_final = one("select accuracy_score, complete from judge_results where run_id=%s and node_id is null order by (judge_model='panel') desc, created_at desc limit 1", (run_id,))
     nodes = [r["node_id"] for r in q("select distinct node_id from node_results where run_id=%s", (run_id,))]
     user = f"""Rating: {rating}/5. Marked complete: {complete}.
 Feedback text: {text or '(none)'}

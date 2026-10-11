@@ -44,7 +44,9 @@ async def test_loop_edge_sends_back_then_approves(linear_graph, task, fake_facto
     assert ids == ["p", "e", "r", "e", "r"]
     revised_prompt = FakeProvider.calls[3][1]
     assert "Revision requested" in revised_prompt and "add input validation" in revised_prompt
-    assert totals["final_output"].startswith("APPROVED")
+    # final output is the executor's revised work, not the reviewer's "APPROVED" verdict
+    assert not totals["final_output"].startswith("APPROVED")
+    assert totals["final_output"] == ctx.outputs["e"]["content"]
 
 @pytest.mark.asyncio
 async def test_parallel_branches_run_together(task, fake_factory):

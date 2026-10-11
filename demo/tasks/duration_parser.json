@@ -1,0 +1,9 @@
+{
+  "title": "Duration parser (coding, 9 hidden tests)",
+  "task_type": "coding",
+  "description": "Write a Python function parse_duration(s: str) -> int that converts a human duration string into total seconds.\nRules:\n- Units: d (days), h (hours), m (minutes), s (seconds). Case-insensitive.\n- Each part is a positive integer immediately followed by a unit, e.g. '2h', '45s'.\n- Parts may be separated by spaces or not: '1h 30m' and '1h30m' are both valid.\n- Each unit may appear at most once.\n- Raise ValueError for empty strings, unknown units, missing numbers, repeated units, or any leftover characters.\nReturn ONLY the code in one ```python block, including imports.",
+  "rubric": "Correct totals for all valid inputs; ValueError for every invalid input listed in the rules; no external libraries.",
+  "test_cases": {
+    "code": "import pytest\nfrom solution import parse_duration\n\ndef test_hours_minutes(): assert parse_duration('1h 30m') == 5400\ndef test_seconds_only(): assert parse_duration('45s') == 45\ndef test_three_units(): assert parse_duration('2h 5m 10s') == 7510\ndef test_no_spaces(): assert parse_duration('1h30m') == 5400\ndef test_case_insensitive(): assert parse_duration('1H 2M') == 3720\ndef test_days(): assert parse_duration('1d 1h') == 90000\ndef test_garbage():\n    with pytest.raises(ValueError): parse_duration('abc')\ndef test_empty():\n    with pytest.raises(ValueError): parse_duration('')\ndef test_repeated_unit():\n    with pytest.raises(ValueError): parse_duration('1h 2h')\n"
+  }
+}

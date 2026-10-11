@@ -179,6 +179,15 @@ async def _run_node(ctx: RunContext, nid: str, loop_index: int = 0, loop_note: s
             await _run_node(ctx, nid, loop_index + 1)
             return
 
+def _deliverable(ctx: RunContext, end_id: str) -> str:
+    """The team's actual work product for an end node.
+    A reviewer at the end (it has a loop edge back to the node it reviews) produces a verdict, not the
+    deliverable - so take the latest output of the node it reviewed (e.g. the executor's code)."""
+    for le in G.loop_edges_from(ctx.graph, end_id):
+        if le["target"] in ctx.outputs:
+            return ctx.outputs[le["target"]]["content"]
+    return ctx.outputs[end_id]["content"]
+
 async def execute(ctx: RunContext) -> dict:
     """Run the whole graph. Returns totals + final output."""
     t0 = time.perf_counter()
@@ -195,7 +204,7 @@ async def execute(ctx: RunContext) -> dict:
             await asyncio.gather(*(_run_node(ctx, n) for n in ready))
             done.update(ready); pending.difference_update(ready)
         ends = G.end_nodes(ctx.graph)
-        finals = [ctx.outputs[e]["content"] for e in ends if e in ctx.outputs]
+        finals = [_deliverable(ctx, e) for e in ends if e in ctx.outputs]
         final = "\n\n---\n\n".join(finals)
         totals = {**ctx.totals, "latency_ms": int((time.perf_counter() - t0) * 1000), "final_output": final, "status": "done"}
         await ctx.store.finish_run(ctx.run_id, totals)

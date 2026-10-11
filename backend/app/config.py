@@ -10,7 +10,10 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "")
 
 # Judge: a model NOT used inside squads being compared. Override in .env if you like.
-JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "anthropic/claude-sonnet-4.5")
+JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "anthropic/claude-sonnet-4.5")   # single-model helper (human-feedback parsing)
+# Panel of judges from different companies: each scores independently, the app averages them and reports disagreement.
+JUDGE_PANEL = [m.strip() for m in os.environ.get(
+    "JUDGE_PANEL", "anthropic/claude-sonnet-5.5,openai/gpt-5.4,google/gemini-3.1-pro-preview").split(",") if m.strip()]
 
 # Guardrails
 DEFAULT_MAX_TOKENS = int(os.environ.get("DEFAULT_MAX_TOKENS", "1500"))

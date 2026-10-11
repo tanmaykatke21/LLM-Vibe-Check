@@ -1,7 +1,7 @@
 "use client";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { ReactFlow, Background, Controls, MiniMap, addEdge, useNodesState, useEdgesState, Handle, Position,
-  type Connection, type Node, type Edge, type NodeProps, MarkerType } from "@xyflow/react";
+  type Connection, type Node, type Edge, type NodeProps, type ReactFlowInstance, MarkerType } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import type { Graph, GNode, GEdge } from "@/lib/api";
 
@@ -49,11 +49,17 @@ export default function SquadCanvas({ graph, onChange, onSelect, readOnly, statu
   const init = useMemo(() => toFlow(graph, status, metric), []); // eslint-disable-line react-hooks/exhaustive-deps
   const [nodes, setNodes, onNodesChange] = useNodesState(init.nodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(init.edges);
+  const rf = useRef<ReactFlowInstance | null>(null);
+  const prevCount = useRef(graph.nodes.length);
 
   // sync in external graph/status changes
   useEffect(() => { const f = toFlow(graph, status, metric);
     setNodes(f.nodes.map(n => ({ ...n, position: nodes.find(x => x.id === n.id)?.position ?? n.position })));
-    setEdges(f.edges); }, [graph, status, metric]); // eslint-disable-line react-hooks/exhaustive-deps
+    setEdges(f.edges);
+    if (graph.nodes.length !== prevCount.current) {   // node added/removed or preset loaded -> zoom to fit
+      setTimeout(() => rf.current?.fitView({ padding: 0.2, duration: 300 }), 60);
+    }
+    prevCount.current = graph.nodes.length; }, [graph, status, metric]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onConnect = useCallback((c: Connection) => {
     if (readOnly) return;
@@ -68,7 +74,7 @@ export default function SquadCanvas({ graph, onChange, onSelect, readOnly, statu
   return (
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}
       onNodesChange={onNodesChange} onEdgesChange={(ch) => { onEdgesChange(ch); if (ch.some(c => c.type === "remove")) setTimeout(commit, 0); }}
-      onConnect={onConnect} onNodeDragStop={commit} onNodeClick={(_, n) => onSelect?.(n.id)} onPaneClick={() => onSelect?.(null)}
+      onInit={(i) => { rf.current = i as unknown as ReactFlowInstance; }} onConnect={onConnect} onNodeDragStop={commit} onNodeClick={(_, n) => onSelect?.(n.id)} onPaneClick={() => onSelect?.(null)}
       nodesDraggable={!readOnly} nodesConnectable={!readOnly} elementsSelectable fitView deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}>
       <Background /><Controls /><MiniMap pannable zoomable />
     </ReactFlow>

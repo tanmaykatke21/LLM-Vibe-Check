@@ -66,6 +66,8 @@ def topo_order(graph: dict) -> list[str]:
     indeg = {n: 0 for n in nodes}
     out = defaultdict(list)
     for e in forward_edges(graph):
+        if e.get("source") not in indeg or e.get("target") not in indeg:
+            continue   # dangling edge (node was deleted): validate() reports it; ordering just ignores it
         out[e["source"]].append(e["target"])
         indeg[e["target"]] += 1
     dq = deque([n for n in nodes if indeg[n] == 0])

@@ -21,4 +21,10 @@ app.mount("/audio", StaticFiles(directory=str(AUDIO_DIR)), name="audio")
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    """Also pings the database, so 'is the DB up?' is one curl away."""
+    from app.db.client import one
+    try:
+        one("select 1 as ok")
+        return {"status": "ok", "db": "ok"}
+    except Exception as ex:
+        return {"status": "degraded", "db": f"unreachable: {type(ex).__name__}. Is the Docker container running? -> docker start squad-db"}
