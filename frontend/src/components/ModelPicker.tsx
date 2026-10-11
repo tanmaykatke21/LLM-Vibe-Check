@@ -37,7 +37,7 @@ export default function ModelPicker({ value, models, onChange, compact }:
     return { featured: FEATURED.filter(match), order, g };
   }, [models, q]);
 
-  const cls = "border rounded px-2 py-1 text-sm w-full";
+  const cls = "field";
   const hasValue = value && (byId[value] || FEATURED.includes(value));
   return (
     <div className={compact ? "flex gap-1 items-center" : "space-y-1 mt-1"}>
@@ -49,7 +49,7 @@ export default function ModelPicker({ value, models, onChange, compact }:
         {groups.order.map(p => <optgroup key={p} label={p}>
           {groups.g[p].map(id => <option key={id} value={id}>{id}{price(byId[id])}</option>)}</optgroup>)}
       </select>
-      {!compact && <div className="text-[10px] text-gray-500">{models.length} models available{q && ` · showing matches for "${q}"`}</div>}
+      {!compact && <div className="text-[11px] text-faint">{models.length} models available{q && `, showing matches for "${q}"`}</div>}
     </div>
   );
 }

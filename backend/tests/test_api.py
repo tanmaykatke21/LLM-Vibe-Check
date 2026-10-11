@@ -97,3 +97,15 @@ def test_validating_a_squad_with_a_dangling_arrow_returns_problems_not_500():
     g = {"nodes": [{"id": "a", "kind": "llm", "model": "m"}], "edges": [{"id": "x", "source": "a", "target": "deleted"}]}
     r = client.post("/graph/validate", json=g)
     assert r.status_code == 200 and r.json()["valid"] is False and "unknown source/target" in r.json()["problems"][0]
+
+@pytest.mark.parametrize("path,count_sql", [("/tasks/t1", "from runs where task_id"), ("/sessions/s1", "from runs where session_id"),
+                                             ("/skills/k1", "from sessions where graph")])
+def test_delete_is_refused_when_something_depends_on_it(monkeypatch, path, count_sql):
+    db = FakeDB([(count_sql, {"c": 2})]); use_db(monkeypatch, db)
+    r = client.delete(path)
+    assert r.status_code == 409 and not db.writes("delete from")
+
+@pytest.mark.parametrize("path", ["/tasks/t1", "/sessions/s1", "/skills/k1"])
+def test_delete_works_when_unused(monkeypatch, path):
+    db = FakeDB([("count(*)", {"c": 0})]); use_db(monkeypatch, db)
+    assert client.delete(path).json() == {"ok": True} and len(db.writes("delete from")) == 1

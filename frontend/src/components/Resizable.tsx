@@ -57,8 +57,8 @@ export function ResizeHandle({ axis, size, onResize, reset, label }:
       aria-valuenow={size} tabIndex={0} title={`${label} — drag to resize, double-click to reset`}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={end} onPointerCancel={end}
       onDoubleClick={() => onResize(reset)} onKeyDown={onKeyDown}
-      className={`${base} group bg-gray-100 hover:bg-indigo-100 focus:bg-indigo-100 outline-none ${active ? "bg-indigo-200" : ""}`}>
-      <div className={`${grip} ${active ? "bg-indigo-600" : "bg-gray-400 group-hover:bg-indigo-500"}`} />
+      className={`${base} group bg-line hover:bg-accent-soft focus:bg-accent-soft outline-none ${active ? "bg-accent-soft" : ""}`}>
+      <div className={`${grip} ${active ? "bg-accent" : "bg-faint group-hover:bg-accent"}`} />
     </div>
   );
 }

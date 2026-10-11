@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
-export const metadata: Metadata = { title: "LLMSquad", description: "Which AI team should do this job?" };
+const sans = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-plex-sans" });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono" });
+
+export const metadata: Metadata = { title: "LLMSquad", description: "Build teams of AI models, run them on a task, and find the one that does it best." };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en"><body className="min-h-screen bg-white text-gray-900">
-      <nav className="border-b px-4 py-2 flex gap-5 items-center text-sm">
-        <Link href="/" className="font-bold text-base">LLMSquad</Link>
-        <Link href="/builder">Builder</Link><Link href="/compare">Compare</Link><Link href="/skills">Skills</Link>
-        <span className="ml-auto text-gray-400 text-xs">Which AI team should do this job?</span>
-      </nav>
-      {children}
-    </body></html>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body className="min-h-screen bg-paper text-ink">
+        <Nav />
+        {children}
+      </body>
+    </html>
   );
 }

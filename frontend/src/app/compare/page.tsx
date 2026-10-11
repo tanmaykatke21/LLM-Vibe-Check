@@ -2,6 +2,7 @@
 import { Suspense, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { api, type CompareRow, type CompareNode, type Task } from "@/lib/api";
+import { ModelChip } from "@/components/ui";
 
 /* Categorical slots (fixed order, validated palette). Color follows the squad, never its rank. */
 const SLOTS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"];
@@ -125,23 +126,23 @@ function Compare() {
   const hideTip = () => setTip(null);
 
   return (
-    <main className="px-4 md:px-6 py-6 max-w-7xl mx-auto text-gray-900">
+    <main className="mx-auto max-w-7xl px-4 py-8 text-ink md:px-6">
       {/* Header */}
       <div className="flex gap-3 items-end flex-wrap justify-between">
         <div>
-          <p className="text-xs uppercase tracking-wider text-gray-500">Squad showdown</p>
-          <h1 className="text-2xl font-semibold">Which squad wins this task?</h1>
+          <h1 className="text-[24px] font-semibold tracking-tight">Which squad wins this task?</h1>
+          <p className="mt-1 text-muted">Every run of the same task, scored by hidden tests and a three-company judge panel.</p>
         </div>
         <div className="flex items-center gap-2">
-          <select className="border rounded-md px-2 py-1.5 text-sm bg-white max-w-xs" value={taskId} onChange={e => setTaskId(e.target.value)}>
+          <select className="field !w-auto max-w-xs" value={taskId} onChange={e => setTaskId(e.target.value)}>
             {tasks.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
           </select>
-          <span className="text-xs text-gray-500">{all.length} run{all.length === 1 ? "" : "s"}{busy ? " · re-scoring…" : ""}</span>
+          <span className="text-xs text-muted">{all.length} run{all.length === 1 ? "" : "s"}{busy ? " · re-scoring…" : ""}</span>
         </div>
       </div>
 
       {all.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed p-10 text-center text-gray-500">
+        <div className="mt-8 rounded-xl border border-dashed border-line-strong p-10 text-center text-muted">
           No finished runs for this task yet. Run the same task on 2+ squads from the Builder, then click <b>Run judge</b> on each run.
         </div>
       ) : (<>
@@ -151,7 +152,7 @@ function Compare() {
             const off = hidden.has(r.id);
             return (
               <button key={r.id} onClick={() => { const n = new Set(hidden); if (off) n.delete(r.id); else n.add(r.id); setHidden(n); }}
-                className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${off ? "opacity-40 line-through" : "bg-white"}`}
+                className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${off ? "opacity-40 line-through border-line" : "bg-surface border-line"}`}
                 title={off ? "Show this squad" : "Hide this squad"}>
                 <span className="h-2.5 w-2.5 rounded-full" style={{ background: r.color }} />{r.label}
               </button>
@@ -168,21 +169,21 @@ function Compare() {
 
         {/* Rank-by control */}
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          <span className="text-sm text-gray-600">Rank by</span>
-          <div className="inline-flex rounded-lg border bg-gray-50 p-0.5">
+          <span className="text-sm text-muted">Rank by</span>
+          <div className="inline-flex rounded-lg border border-line bg-paper p-0.5">
             {(Object.keys(METRICS) as RankKey[]).map(k => (
               <button key={k} onClick={() => setRank(k)}
-                className={`px-3 py-1 text-sm rounded-md ${rank === k ? "bg-white shadow-sm font-medium" : "text-gray-600 hover:text-gray-900"}`}>
+                className={`px-3 py-1 text-sm rounded-md ${rank === k ? "bg-surface shadow-sm font-medium text-ink" : "text-muted hover:text-ink"}`}>
                 {METRICS[k].label}
               </button>
             ))}
           </div>
-          <span className="text-xs text-gray-500">{metric.hint}</span>
+          <span className="text-xs text-muted">{metric.hint}</span>
         </div>
 
         <div className="mt-3 grid lg:grid-cols-5 gap-4 items-start">
           {/* Leaderboard */}
-          <section className="lg:col-span-2 rounded-xl border bg-white p-3">
+          <section className="lg:col-span-2 rounded-xl border border-line bg-surface p-3">
             <h2 className="text-sm font-semibold px-1">Leaderboard · {metric.label}</h2>
             <ol className="mt-2 space-y-2">
               {ranked.map((r, i) => <LeaderRow key={r.id} r={r} i={i} m={metric} rows={ranked} active={selected?.id === r.id} onClick={() => setSel(r.id)} />)}
@@ -190,10 +191,10 @@ function Compare() {
           </section>
 
           {/* Scatter */}
-          <section className="lg:col-span-3 rounded-xl border bg-white p-3">
+          <section className="lg:col-span-3 rounded-xl border border-line bg-surface p-3">
             <div className="flex items-baseline justify-between px-1">
               <h2 className="text-sm font-semibold">Quality vs cost</h2>
-              <span className="text-xs text-gray-500">top-left is best · dashed line = best quality for the money</span>
+              <span className="text-xs text-muted">top-left is best · dashed line = best quality for the money</span>
             </div>
             <Scatter rows={rows} onTip={showTip} onLeave={hideTip} onPick={setSel} />
           </section>
@@ -213,13 +214,13 @@ function Compare() {
         <FullTable rows={ranked} onPick={setSel} />
 
         {/* Weights */}
-        <details className="mt-4 rounded-xl border bg-white p-3">
+        <details className="mt-4 rounded-xl border border-line bg-surface p-3">
           <summary className="cursor-pointer text-sm font-semibold">How the overall score works (adjust weights)</summary>
-          <div className="mt-2 text-xs text-gray-700 space-y-1">
+          <div className="mt-2 text-xs text-ink space-y-1">
             <p><b>Overall (0–100) = Quality × (1 − efficiency penalty)</b></p>
             <p><b>Quality</b> = weighted average of whatever exists: judge panel (×10), hidden-test pass rate (×100), human rating (1★ = 0, 5★ = 100).</p>
             <p><b>Efficiency penalty</b> = how far each squad is from the best one <i>on this task</i>: costing 2× the cheapest squad loses half of the cost weight, being 2× slower loses half of the speed weight; each human edit/rejection costs a third of the help weight.</p>
-            <p className="text-gray-500">A failed run scores ≈0 however cheap it was; the best, cheapest, fastest squad scores 100. Scores never leave 0–100.</p>
+            <p className="text-muted">A failed run scores ≈0 however cheap it was; the best, cheapest, fastest squad scores 100. Scores never leave 0–100.</p>
           </div>
           <div className="mt-3 grid grid-cols-2 md:grid-cols-6 gap-3 text-xs">
             {W.map(k => (
@@ -229,12 +230,12 @@ function Compare() {
               </label>
             ))}
           </div>
-          <p className="mt-2 text-xs text-gray-500">Release a slider to re-rank. Quality weights are relative (×); penalties are the most a squad can lose for being worst at that.</p>
+          <p className="mt-2 text-xs text-muted">Release a slider to re-rank. Quality weights are relative (×); penalties are the most a squad can lose for being worst at that.</p>
         </details>
       </>)}
 
       {tip && (
-        <div className="pointer-events-none fixed z-50 rounded-md border bg-white px-2.5 py-1.5 text-xs shadow-lg"
+        <div className="pointer-events-none fixed z-50 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-xs shadow-lg"
           style={{ left: Math.min(tip.x + 12, (typeof window !== "undefined" ? window.innerWidth : 9999) - 240), top: tip.y + 12 }}>
           {tip.body}
         </div>
@@ -258,20 +259,20 @@ function Award({ k, rows, active, onClick }: { k: RankKey; rows: Row[]; active: 
     else delta = Math.abs(a - b) < 1e-9 ? `tied with ${next.label}` : `+${m.fmt(a - b).replace(/\/100?$/, "")} over next`;
   }
   return (
-    <button onClick={onClick} className={`text-left rounded-xl border p-3 bg-white transition ${active ? "ring-2 ring-indigo-500 border-transparent" : "hover:border-gray-400"}`}>
-      <div className="text-xs text-gray-500">{ICON[k]} {k === "overall" ? "Best overall" : k === "quality" ? "Highest quality" : k === "value" ? "Cheapest correct answer" : m.label}</div>
+    <button onClick={onClick} className={`text-left rounded-xl border border-line p-3 bg-surface transition ${active ? "ring-2 ring-accent border-t border-lineransparent" : "hover:border-line-strong"}`}>
+      <div className="text-xs text-muted">{ICON[k]} {k === "overall" ? "Best overall" : k === "quality" ? "Highest quality" : k === "value" ? "Cheapest correct answer" : m.label}</div>
       {best ? (<>
         <div className="mt-1 flex items-center gap-1.5 font-semibold truncate"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: best.color }} /><span className="truncate">{best.label}</span></div>
         <div className="text-xl font-semibold tabular-nums">{m.fmt(m.get(best)!)}</div>
-        <div className="text-[11px] text-gray-500 h-4 truncate">{k === "value" ? [`${best.squadWins}/${best.squadJudged} correct`, delta].filter(Boolean).join(" · ") : delta}</div>
-      </>) : <div className="mt-1 text-sm text-gray-400">not evaluated yet</div>}
+        <div className="text-[11px] text-muted h-4 truncate">{k === "value" ? [`${best.squadWins}/${best.squadJudged} correct`, delta].filter(Boolean).join(" · ") : delta}</div>
+      </>) : <div className="mt-1 text-sm text-faint">not evaluated yet</div>}
     </button>
   );
 }
 
 function Status({ s }: { s?: string }) {
   const map: Record<string, [string, string]> = { complete: ["✓ complete", "bg-green-50 text-green-800 border-green-200"], partial: ["◐ partial", "bg-amber-50 text-amber-800 border-amber-200"], failed: ["✕ failed", "bg-red-50 text-red-800 border-red-200"] };
-  const [t, c] = map[s ?? ""] ?? ["– not judged", "bg-gray-50 text-gray-600 border-gray-200"];
+  const [t, c] = map[s ?? ""] ?? ["– not judged", "bg-paper text-muted border-gray-200"];
   return <span className={`rounded border px-1.5 py-0.5 text-[10px] whitespace-nowrap ${c}`}>{t}</span>;
 }
 
@@ -283,18 +284,18 @@ function LeaderRow({ r, i, m, rows, active, onClick }: { r: Row; i: number; m: M
   const frac = v == null ? 0 : m.better === "high" ? (max > min ? (v - Math.min(min, 0)) / (max - Math.min(min, 0)) : 1) : v > 0 ? Math.min(...vals.filter(x => x > 0), v) / v : 1;
   return (
     <li>
-      <button onClick={onClick} className={`w-full text-left rounded-lg border p-2.5 flex gap-3 items-center ${active ? "border-indigo-400 bg-indigo-50/40" : "hover:bg-gray-50"}`}>
-        <span className={`text-lg font-semibold w-6 text-center tabular-nums ${i === 0 && v != null ? "text-indigo-700" : "text-gray-400"}`}>{i + 1}</span>
+      <button onClick={onClick} className={`w-full text-left rounded-lg border p-2.5 flex gap-3 items-center ${active ? "border-accent bg-accent-soft/50" : "border-line hover:bg-paper"}`}>
+        <span className={`text-lg font-semibold w-6 text-center tabular-nums ${i === 0 && v != null ? "text-accent" : "text-faint"}`}>{i + 1}</span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: r.color }} />
             <span className="font-medium truncate">{r.label}</span><Status s={r.completion_status} /></div>
-          <div className="mt-1 flex flex-wrap gap-1">{(r.models ?? []).slice(0, 4).map(x => <span key={x} className="rounded bg-gray-100 px-1.5 text-[10px] text-gray-700">{shortModel(x)}</span>)}</div>
-          <div className="mt-1.5 h-1.5 rounded-full bg-gray-100"><div className="h-1.5 rounded-full" style={{ width: `${Math.max(frac * 100, v == null ? 0 : 3)}%`, background: r.color }} /></div>
+          <div className="mt-1 flex flex-wrap gap-1">{(r.models ?? []).slice(0, 4).map(x => <ModelChip key={x} model={x} />)}</div>
+          <div className="mt-1.5 h-1.5 rounded-full bg-paper"><div className="h-1.5 rounded-full" style={{ width: `${Math.max(frac * 100, v == null ? 0 : 3)}%`, background: r.color }} /></div>
         </div>
         <div className="text-right">
           <div className="font-semibold tabular-nums">{v == null ? "—" : m.fmt(v)}</div>
-          <div className="text-[11px] text-gray-500 tabular-nums">{money(r.cost)} · {secs(r.time)}</div>
-          <div className="text-[11px] text-gray-500 tabular-nums" title="Runs of this squad marked complete / runs judged">{r.squadWins}/{r.squadJudged} correct</div>
+          <div className="text-[11px] text-muted tabular-nums">{money(r.cost)} · {secs(r.time)}</div>
+          <div className="text-[11px] text-muted tabular-nums" title="Runs of this squad marked complete / runs judged">{r.squadWins}/{r.squadJudged} correct</div>
         </div>
       </button>
     </li>
@@ -331,7 +332,7 @@ function Scatter({ rows, onTip, onLeave, onPick }: { rows: Row[]; onPick: (id: s
   const frontier: Row[] = []; let bestQ = -1;
   [...pts].sort((a, b) => a.cost - b.cost || b.quality! - a.quality!).forEach(p => { if (p.quality! > bestQ) { frontier.push(p); bestQ = p.quality!; } });
   const xt = [0, 0.25, 0.5, 0.75, 1].map(f => f * maxC);
-  if (!pts.length) return <div className="h-64 grid place-items-center text-sm text-gray-400">Run the judge on at least one run to plot quality.</div>;
+  if (!pts.length) return <div className="h-64 grid place-items-center text-sm text-faint">Run the judge on at least one run to plot quality.</div>;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto mt-1" role="img" aria-label="Scatter of judge quality against cost per run">
       <rect x={L} y={T} width={(W - L - R) * 0.35} height={(H - T - B) * 0.35} fill="#2a78d6" opacity={0.05} rx={6} />
@@ -360,15 +361,15 @@ function MiniBars({ m, rows, onTip, onLeave }: { m: Metric; rows: Row[] } & TipF
   const max = Math.max(...vals, 0) || 1;
   const best = vals.length ? (m.better === "high" ? Math.max(...vals) : Math.min(...vals)) : null;
   return (
-    <div className="rounded-xl border bg-white p-3">
-      <div className="flex items-baseline justify-between"><h3 className="text-sm font-semibold">{m.short}</h3><span className="text-[11px] text-gray-500">{m.better === "high" ? "higher is better" : "lower is better"}</span></div>
+    <div className="rounded-xl border border-line bg-surface p-3">
+      <div className="flex items-baseline justify-between"><h3 className="text-sm font-semibold">{m.short}</h3><span className="text-[11px] text-muted">{m.better === "high" ? "higher is better" : "lower is better"}</span></div>
       <div className="mt-2 space-y-1.5">
         {rows.map(r => {
           const v = m.get(r);
           return (
             <div key={r.id} className="grid grid-cols-[96px_1fr_auto] items-center gap-2 text-xs" onMouseMove={e => onTip(e, <TipBody r={r} />)} onMouseLeave={onLeave}>
-              <span className="truncate text-gray-700" title={r.label}>{r.label}</span>
-              <div className="h-3.5 rounded-r bg-gray-50">{v != null && <div className="h-3.5 rounded-r" style={{ width: `${Math.max((v / max) * 100, 2)}%`, background: r.color }} />}</div>
+              <span className="truncate text-ink" title={r.label}>{r.label}</span>
+              <div className="h-3.5 rounded-r bg-paper">{v != null && <div className="h-3.5 rounded-r" style={{ width: `${Math.max((v / max) * 100, 2)}%`, background: r.color }} />}</div>
               <span className="tabular-nums w-20 text-right whitespace-nowrap">{v == null ? "—" : m.fmt(v)}{v != null && v === best && vals.length > 1 ? " ★" : ""}</span>
             </div>
           );
@@ -384,32 +385,32 @@ function Breakdown({ r, onTip, onLeave, onRepeat, msg }: { r: Row; onRepeat: (n:
   const tt = nodes.reduce((s, n) => s + Number(n.latency_ms), 0) || 1;
   const topCost = [...nodes].sort((a, b) => Number(b.cost_usd) - Number(a.cost_usd))[0];
   return (
-    <section className="mt-4 rounded-xl border bg-white p-3">
+    <section className="mt-4 rounded-xl border border-line bg-surface p-3">
       <div className="flex flex-wrap items-baseline justify-between gap-2 px-1">
         <h2 className="text-sm font-semibold flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full" style={{ background: r.color }} />Where the money and time went · {r.label}</h2>
         <div className="flex items-center gap-3">
-          <button onClick={() => onRepeat(3)} className="rounded-md border px-2 py-1 text-xs hover:bg-gray-50"
+          <button onClick={() => onRepeat(3)} className="h-7 rounded-lg border border-line-strong bg-surface px-2.5 text-xs font-medium hover:bg-paper"
             title="Run this squad 3 more times on this task and judge each run, to measure how reliably it gets the answer right">Run 3× more</button>
-          <a className="text-xs text-indigo-700" href={`/runs/${r.id}`}>open run →</a>
+          <a className="text-xs font-medium text-accent hover:underline" href={`/runs/${r.id}`}>Open run</a>
         </div>
       </div>
-      {msg && <p className="mt-1 px-1 text-xs text-indigo-800">{msg}</p>}
-      <p className="mt-1 px-1 text-xs text-gray-600">Reliability: <b>{r.squadWins}/{r.squadJudged}</b> judged runs correct · average {money(r.squadAvgCost)} per run → <b>{r.value == null ? "no correct answer yet" : `${money(r.value)} per correct answer`}</b></p>
+      {msg && <p className="mt-1 px-1 text-xs text-accent">{msg}</p>}
+      <p className="mt-1 px-1 text-xs text-muted">Reliability: <b>{r.squadWins}/{r.squadJudged}</b> judged runs correct, average {money(r.squadAvgCost)} per run, so <b>{r.value == null ? "no correct answer yet" : `${money(r.value)} per correct answer`}</b></p>
       <div className="mt-2 grid grid-cols-2 md:grid-cols-6 gap-2 text-xs">
         <Stat k="Cost / run" v={money(r.cost)} /><Stat k="Projected / 1k runs" v={money(r.per1k)} /><Stat k="Wall-clock" v={secs(r.time)} />
         <Stat k="Tokens in / out" v={`${kfmt(Number(r.total_input_tokens ?? 0))} / ${kfmt(Number(r.total_output_tokens ?? 0))}`} />
         <Stat k="Output tok/s" v={r.tps == null ? "—" : r.tps.toFixed(0)} /><Stat k="LLM calls · loops" v={`${r.llm_calls ?? 0} · ${(r.loops_used ?? 0) + 1}`} />
       </div>
-      {topCost && nodes.length > 1 && <p className="mt-2 px-1 text-xs text-gray-600">💡 <b>{topCost.role}</b> ({shortModel(topCost.model_or_tool)}) is {Math.round(Number(topCost.cost_usd) / tc * 100)}% of the cost — the first place to try a cheaper model.</p>}
+      {topCost && nodes.length > 1 && <p className="mt-2 px-1 text-xs text-muted">💡 <b>{topCost.role}</b> ({shortModel(topCost.model_or_tool)}) is {Math.round(Number(topCost.cost_usd) / tc * 100)}% of the cost — the first place to try a cheaper model.</p>}
       <div className="mt-2 overflow-x-auto">
         <table className="w-full text-xs">
-          <thead className="text-left text-gray-500"><tr><th className="py-1 pr-2">Node</th><th className="pr-2">Model / tool</th><th className="pr-2 text-right">Calls</th><th className="pr-2 text-right">Tokens</th><th className="pr-2 w-1/4">Cost share</th><th className="w-1/4">Time share</th></tr></thead>
+          <thead className="text-left text-muted"><tr><th className="py-1 pr-2">Node</th><th className="pr-2">Model / tool</th><th className="pr-2 text-right">Calls</th><th className="pr-2 text-right">Tokens</th><th className="pr-2 w-1/4">Cost share</th><th className="w-1/4">Time share</th></tr></thead>
           <tbody>{nodes.map(n => {
             const cs = Number(n.cost_usd) / tc, ts = Number(n.latency_ms) / tt;
             return (
-              <tr key={n.node_id} className="border-t" onMouseMove={e => onTip(e, <div><b>{n.role}</b> · {n.model_or_tool}<br />{money(Number(n.cost_usd))} · {secs(Number(n.latency_ms))}{n.reused ? " · reused from parent run" : ""}</div>)} onMouseLeave={onLeave}>
+              <tr key={n.node_id} className="border-t border-line" onMouseMove={e => onTip(e, <div><b>{n.role}</b> · {n.model_or_tool}<br />{money(Number(n.cost_usd))} · {secs(Number(n.latency_ms))}{n.reused ? " · reused from parent run" : ""}</div>)} onMouseLeave={onLeave}>
                 <td className="py-1.5 pr-2 font-medium">{n.role}{n.reused && <span className="ml-1 text-[10px] text-amber-700">reused</span>}</td>
-                <td className="pr-2 text-gray-700">{shortModel(n.model_or_tool ?? "")}</td>
+                <td className="pr-2"><ModelChip model={n.model_or_tool} /></td>
                 <td className="pr-2 text-right tabular-nums">{n.calls}</td>
                 <td className="pr-2 text-right tabular-nums">{kfmt(Number(n.input_tokens) + Number(n.output_tokens))}</td>
                 <td className="pr-2"><Share f={cs} color={r.color} label={money(Number(n.cost_usd))} /></td>
@@ -417,16 +418,16 @@ function Breakdown({ r, onTip, onLeave, onRepeat, msg }: { r: Row; onRepeat: (n:
               </tr>
             );
           })}
-            {nodes.length === 0 && <tr><td colSpan={6} className="py-2 text-gray-400">No node data for this run.</td></tr>}</tbody>
+            {nodes.length === 0 && <tr><td colSpan={6} className="py-2 text-faint">No node data for this run.</td></tr>}</tbody>
         </table>
       </div>
     </section>
   );
 }
 
-const Stat = ({ k, v }: { k: string; v: string }) => <div className="rounded-lg bg-gray-50 px-2 py-1.5"><div className="text-gray-500">{k}</div><div className="font-semibold tabular-nums text-sm">{v}</div></div>;
+const Stat = ({ k, v }: { k: string; v: string }) => <div className="rounded-lg bg-paper px-2 py-1.5"><div className="text-muted">{k}</div><div className="font-semibold tabular-nums text-sm">{v}</div></div>;
 const Share = ({ f, color, label }: { f: number; color: string; label: string }) => (
-  <div className="flex items-center gap-2"><div className="h-2.5 flex-1 rounded-r bg-gray-50"><div className="h-2.5 rounded-r" style={{ width: `${Math.max(f * 100, 1)}%`, background: color }} /></div><span className="w-28 tabular-nums text-right whitespace-nowrap">{Math.round(f * 100)}% · {label}</span></div>
+  <div className="flex items-center gap-2"><div className="h-2.5 flex-1 rounded-r bg-paper"><div className="h-2.5 rounded-r" style={{ width: `${Math.max(f * 100, 1)}%`, background: color }} /></div><span className="w-28 tabular-nums text-right whitespace-nowrap">{Math.round(f * 100)}% · {label}</span></div>
 );
 
 type Col = { k: string; label: string; get: (r: Row) => number | string | null; fmt?: (r: Row) => string };
@@ -459,23 +460,23 @@ function FullTable({ rows, onPick }: { rows: Row[]; onPick: (id: string) => void
     return (Number(x) - Number(y)) * sort!.dir;
   }) : rows;
   return (
-    <section className="mt-4 rounded-xl border bg-white">
-      <div className="px-4 pt-3 text-sm font-semibold">All parameters <span className="font-normal text-xs text-gray-500">· click a column to sort</span></div>
+    <section className="mt-4 rounded-xl border border-line bg-surface">
+      <div className="px-4 pt-3 text-sm font-semibold">All parameters <span className="font-normal text-xs text-muted">· click a column to sort</span></div>
       <div className="overflow-x-auto">
         <table className="mt-2 w-full text-xs">
-          <thead className="bg-gray-50 text-left text-gray-600"><tr>
+          <thead className="bg-paper text-left text-muted"><tr>
             <th className="p-2">Squad</th><th className="p-2">Status</th>
-            {COLS.map(c => <th key={c.k} className="p-2 text-right cursor-pointer select-none whitespace-nowrap hover:text-gray-900"
+            {COLS.map(c => <th key={c.k} className="p-2 text-right cursor-pointer select-none whitespace-nowrap hover:text-ink"
               onClick={() => setSort(s => s?.k === c.k ? { k: c.k, dir: s.dir === 1 ? -1 : 1 } : { k: c.k, dir: -1 })}>
               {c.label}{sort?.k === c.k ? (sort.dir === 1 ? " ▲" : " ▼") : ""}</th>)}
             <th className="p-2" />
           </tr></thead>
           <tbody>{data.map(r => (
-            <tr key={r.id} className="border-t hover:bg-gray-50 cursor-pointer" onClick={() => onPick(r.id)}>
+            <tr key={r.id} className="border-t border-line hover:bg-paper cursor-pointer" onClick={() => onPick(r.id)}>
               <td className="p-2 whitespace-nowrap"><span className="inline-block h-2 w-2 rounded-full mr-1.5" style={{ background: r.color }} />{r.label}</td>
               <td className="p-2"><Status s={r.completion_status} /></td>
               {COLS.map(c => <td key={c.k} className="p-2 text-right tabular-nums">{c.fmt ? c.fmt(r) : (c.get(r) ?? "—")}</td>)}
-              <td className="p-2"><a className="text-indigo-700" href={`/runs/${r.id}`} onClick={e => e.stopPropagation()}>open</a></td>
+              <td className="p-2"><a className="font-medium text-accent hover:underline" href={`/runs/${r.id}`} onClick={e => e.stopPropagation()}>Open</a></td>
             </tr>
           ))}</tbody>
         </table>
@@ -485,3 +486,4 @@ function FullTable({ rows, onPick }: { rows: Row[]; onPick: (id: string) => void
 }
 
 export default function Page() { return <Suspense><Compare /></Suspense>; }
+

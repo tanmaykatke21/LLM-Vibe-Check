@@ -1,33 +1,50 @@
 @import "tailwindcss";
 
-/* LLMSquad is a light-theme app regardless of OS dark mode. */
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-  color-scheme: light;
+/* LLMSquad: clean light workbench. One accent (indigo); colour otherwise belongs to the AI companies. */
+:root { color-scheme: light; }
+
+@theme {
+  --color-paper: #F6F7F9;      /* page background */
+  --color-surface: #FFFFFF;    /* panels, cards */
+  --color-ink: #171A21;        /* primary text */
+  --color-muted: #5D6573;      /* secondary text */
+  --color-faint: #8A919D;      /* hints, placeholders */
+  --color-line: #E2E5EA;       /* hairlines */
+  --color-line-strong: #CDD2D9;
+  --color-accent: #4F46E5;     /* the one action colour */
+  --color-accent-soft: #EEF0FD;
+  --color-good: #15803D;  --color-good-soft: #EAF6EE;
+  --color-warn: #B45309;  --color-warn-soft: #FDF3E4;
+  --color-bad: #B91C1C;   --color-bad-soft: #FCECEC;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@layer base {
+  html, body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-sans); }
+  body { font-size: 14px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { letter-spacing: -0.01em; }
+  /* form controls: always light, one consistent look */
+  input, textarea, select { color: var(--color-ink); background-color: var(--color-surface); border-color: var(--color-line-strong); }
+  input::placeholder, textarea::placeholder { color: var(--color-faint); }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--color-accent); outline-offset: -1px; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+}
+@layer components {
+  .field { width: 100%; border: 1px solid var(--color-line-strong); border-radius: 8px; padding: 6px 10px; font-size: 13px; background: var(--color-surface); }
 }
 
-html, body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
+/* React Flow canvas */
+.react-flow { background: var(--color-paper); }
+.react-flow__background { color: #D5D9E0; }
+.react-flow__minimap { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: 8px; }
+.react-flow__controls { border: 1px solid var(--color-line); border-radius: 8px; overflow: hidden; box-shadow: none; }
+.react-flow__controls button { background: var(--color-surface); color: var(--color-ink); border-bottom: 1px solid var(--color-line); }
+.react-flow__controls button:hover { background: var(--color-paper); }
+.react-flow__edge-text { fill: var(--color-warn); font-size: 11px; font-weight: 500; }
+.react-flow__edge-textbg { fill: var(--color-paper); }
+.react-flow__handle { width: 10px; height: 10px; border: 2px solid var(--color-surface); background: var(--color-muted); }
+.react-flow__attribution { display: none; }
 
-/* React Flow surfaces */
-.react-flow { background: #fafafa; }
-.react-flow__minimap { background: #ffffff; }
-.react-flow__controls button { background: #ffffff; color: #171717; border-bottom: 1px solid #e5e7eb; }
-.react-flow__controls button:hover { background: #f3f4f6; }
-.react-flow__edge-text { fill: #171717; }
-.react-flow__edge-textbg { fill: #ffffff; }
-
-/* form controls always light */
-input, textarea, select, button { color: #171717; background-color: #ffffff; }
-button.bg-black { color: #ffffff; background-color: #000000; }
-button.bg-green-600, button.bg-blue-600, button.bg-red-600 { color: #ffffff; }
-button.bg-green-600 { background-color: #16a34a; } button.bg-blue-600 { background-color: #2563eb; } button.bg-red-600 { background-color: #dc2626; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+/* theme v2 */

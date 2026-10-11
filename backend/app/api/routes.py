@@ -35,7 +35,10 @@ def update_skill(sid: str, s: SkillIn):
     if not row: raise HTTPException(404)
     return row
 @r.delete("/skills/{sid}")
-def delete_skill(sid: str): q("delete from skills where id=%s", (sid,)); return {"ok": True}
+def delete_skill(sid: str):
+    used = one("select count(*) c from sessions where graph::text like %s", (f"%{sid}%",))["c"]
+    if used: raise HTTPException(409, f"This skill is attached to {used} squad(s). Remove it from those nodes first.")
+    q("delete from skills where id=%s", (sid,)); return {"ok": True}
 
 # ---------- tasks ----------
 @r.get("/tasks")
@@ -45,6 +48,11 @@ def create_task(t: TaskIn):
     return one("insert into tasks (user_id,title,description,task_type,test_cases,rubric,reference_output) values (%s,%s,%s,%s,%s,%s,%s) returning *",
                (LOCAL_USER, t.title, t.description, t.task_type, _j(t.test_cases) if t.test_cases is not None else None,
                 _j(t.rubric) if t.rubric is not None else None, t.reference_output))
+@r.delete("/tasks/{tid}")
+def delete_task(tid: str):
+    n = one("select count(*) c from runs where task_id=%s", (tid,))["c"]
+    if n: raise HTTPException(409, f"This task has {n} run(s). It is kept so their results stay comparable.")
+    q("delete from tasks where id=%s", (tid,)); return {"ok": True}
 @r.get("/tasks/{tid}")
 def get_task(tid: str):
     row = one("select * from tasks where id=%s", (tid,))
@@ -68,7 +76,10 @@ def update_session(sid: str, s: SessionIn):
     if not row: raise HTTPException(404)
     return row
 @r.delete("/sessions/{sid}")
-def delete_session(sid: str): q("delete from sessions where id=%s", (sid,)); return {"ok": True}
+def delete_session(sid: str):
+    n = one("select count(*) c from runs where session_id=%s", (sid,))["c"]
+    if n: raise HTTPException(409, f"This squad has {n} run(s). It is kept so their results stay comparable.")
+    q("delete from sessions where id=%s", (sid,)); return {"ok": True}
 @r.post("/sessions/{sid}/validate")
 def validate_session(sid: str):
     row = one("select graph from sessions where id=%s", (sid,))

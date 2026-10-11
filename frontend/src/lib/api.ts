@@ -1,7 +1,11 @@
 export const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function j<T>(r: Response): Promise<T> {
-  if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
+  if (!r.ok) {
+    const body = await r.text();
+    let detail = body; try { const d = JSON.parse(body).detail; detail = typeof d === "string" ? d : JSON.stringify(d); } catch { /* not JSON */ }
+    throw new Error(detail || `Request failed (${r.status})`);
+  }
   return r.json();
 }
 const h = { "content-type": "application/json" };
@@ -9,6 +13,10 @@ const h = { "content-type": "application/json" };
 export const api = {
   models: () => fetch(`${API}/models`).then(j<{ llms: { id: string }[]; tools: string[] }>),
   skills: () => fetch(`${API}/skills`).then(j<Skill[]>),
+  updateSkill: (id: string, b: Partial<Skill>) => fetch(`${API}/skills/${id}`, { method: "PUT", headers: h, body: JSON.stringify(b) }).then(j<Skill>),
+  deleteSkill: (id: string) => fetch(`${API}/skills/${id}`, { method: "DELETE" }).then(j<{ ok: boolean }>),
+  deleteTask: (id: string) => fetch(`${API}/tasks/${id}`, { method: "DELETE" }).then(j<{ ok: boolean }>),
+  deleteSession: (id: string) => fetch(`${API}/sessions/${id}`, { method: "DELETE" }).then(j<{ ok: boolean }>),
   createSkill: (b: Partial<Skill>) => fetch(`${API}/skills`, { method: "POST", headers: h, body: JSON.stringify(b) }).then(j<Skill>),
   tasks: () => fetch(`${API}/tasks`).then(j<Task[]>),
   createTask: (b: Partial<Task>) => fetch(`${API}/tasks`, { method: "POST", headers: h, body: JSON.stringify(b) }).then(j<Task>),
@@ -76,3 +84,4 @@ export type CompareRow = { id: string; session_id: string; session_name: string;
 
 export const fmt$ = (v: string | number | undefined) => `$${Number(v ?? 0).toFixed(5)}`;
 export const fmtMs = (ms: number | undefined) => (ms ?? 0) >= 1000 ? `${((ms ?? 0) / 1000).toFixed(1)}s` : `${ms ?? 0}ms`;
+
