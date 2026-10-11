@@ -48,7 +48,7 @@ export default function Home() {
       </ol>
 
       {health && health !== "ok" && <p role="alert" className="mt-6 rounded-lg bg-bad-soft px-3 py-2 text-[13px] text-bad">
-        {health === "down" ? "The backend isn't reachable. Start it with uvicorn on port 8000." : "The backend is up but the database isn't. Run: docker start squad-db"}</p>}
+        {health === "down" ? "The backend isn't reachable. Locally, start it with uvicorn on port 8000; when hosted, check the Render service." : "The backend is up but can't reach its database. Locally, run: docker start squad-db. When hosted, check DATABASE_URL on Render."}</p>}
       {err && <p role="alert" className="mt-6 rounded-lg bg-warn-soft px-3 py-2 text-[13px] text-warn">{err}</p>}
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">

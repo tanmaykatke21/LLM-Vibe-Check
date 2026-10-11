@@ -1,0 +1,22 @@
+# Render Blueprint: New > Blueprint > pick this repo. Secrets marked sync:false are asked for in the dashboard.
+services:
+  - type: web
+    name: llmvibecheck-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: 0.5c-512mb         # smallest paid plan: always on (the free plan sleeps after 15 min idle)
+    region: virginia
+    numInstances: 1          # must stay 1: live runs are held in memory
+    healthCheckPath: /health
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: JUDGE_PANEL
+        value: anthropic/claude-sonnet-5.5,openai/gpt-5.4,google/gemini-3.1-pro-preview

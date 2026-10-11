@@ -15,6 +15,11 @@ JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "anthropic/claude-sonnet-4.5")   # s
 JUDGE_PANEL = [m.strip() for m in os.environ.get(
     "JUDGE_PANEL", "anthropic/claude-sonnet-5.5,openai/gpt-5.4,google/gemini-3.1-pro-preview").split(",") if m.strip()]
 
+# Which websites may call this API (comma-separated). Add your Vercel URL when hosting.
+ALLOWED_ORIGINS = [o.strip().rstrip("/") for o in os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(",") if o.strip()]
+ALLOWED_ORIGIN_REGEX = os.environ.get("ALLOWED_ORIGIN_REGEX") or None   # e.g. https://llmvibecheck-.*\.vercel\.app for preview deploys
+AUTO_MIGRATE = os.environ.get("AUTO_MIGRATE", "1") == "1"            # create tables on startup if missing
+
 # Guardrails
 DEFAULT_MAX_TOKENS = int(os.environ.get("DEFAULT_MAX_TOKENS", "1500"))
 DEFAULT_MAX_LOOPS = int(os.environ.get("DEFAULT_MAX_LOOPS", "2"))

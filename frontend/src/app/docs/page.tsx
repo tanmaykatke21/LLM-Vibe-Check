@@ -56,7 +56,7 @@ function MiniSquad() {
 /* ---------- table of contents ---------- */
 
 const TOC: { id: string; title: string; keywords: string }[] = [
-  { id: "what", title: "What LLMSquad does", keywords: "about intro overview why" },
+  { id: "what", title: "What LLMVibeCheck does", keywords: "about intro overview why" },
   { id: "quick-start", title: "Quick start in 5 steps", keywords: "start begin first tutorial" },
   { id: "words", title: "Words you'll see", keywords: "glossary token model prompt node role squad" },
   { id: "squads", title: "Build a squad", keywords: "builder node role model arrow connect template save canvas" },
@@ -102,13 +102,13 @@ export default function Docs() {
 
       <article className="min-w-0 space-y-10 pb-24">
         <header>
-          <h1 className="text-[32px] font-semibold tracking-tight">LLMSquad guide</h1>
+          <h1 className="text-[32px] font-semibold tracking-tight">LLMVibeCheck guide</h1>
           <p className="mt-2 max-w-[62ch] text-[15px] text-muted">Everything you can do in the app, explained in plain words. No coding needed, except in the boxes marked “For developers”, which you can skip.</p>
         </header>
 
-        <Section id="what" title="What LLMSquad does"
-          lead="AI models like Claude, GPT and Gemini each have strengths. LLMSquad lets you put several of them on one team, give the team a job, and measure which team does it best.">
-          <p>Think of it like hiring. You assemble a small team, for example one model that plans, one that does the work and one that checks it. You give the team a task. LLMSquad records everything the team does, what it cost and how long it took, and then scores the result.</p>
+        <Section id="what" title="What LLMVibeCheck does"
+          lead="AI models like Claude, GPT and Gemini each have strengths. LLMVibeCheck lets you put several of them on one team, give the team a job, and measure which team does it best.">
+          <p>Think of it like hiring. You assemble a small team, for example one model that plans, one that does the work and one that checks it. You give the team a task. LLMVibeCheck records everything the team does, what it cost and how long it took, and then scores the result.</p>
           <p>Run a few different teams on the same task and the Compare page tells you which one to use: the one that gets the job right for the least money and time.</p>
           <MiniSquad />
         </Section>
@@ -133,7 +133,7 @@ export default function Docs() {
             [<b key="p">Instructions (prompt)</b>, "The text a model is told before it starts. You can edit it for any step."],
             [<b key="t">Task</b>, "The job you give a squad, written in plain words. For example: “Write a function that converts “1h 30m” into seconds.”"],
             [<b key="k">Token</b>, "The unit models read and write in, roughly ¾ of a word. Models charge per token, so more tokens means a higher cost."],
-            [<b key="j">Judge</b>, "An AI model asked to score the squad's work. LLMSquad uses three judges from three different companies."],
+            [<b key="j">Judge</b>, "An AI model asked to score the squad's work. LLMVibeCheck uses three judges from three different companies."],
             [<b key="h">Hidden test</b>, "An automatic check the squad never sees, for example “1h 30m must give 5400”. Used for coding tasks."],
           ]} />
         </Section>
@@ -198,13 +198,13 @@ export default function Docs() {
         </Section>
 
         <Section id="tests" title="Hidden tests" lead="For coding tasks, automatic checks decide whether the code really works. The squad never sees them.">
-          <p>After a run, LLMSquad takes the code from the final answer and runs it against the task's hidden tests, in a safe sandbox that can't reach your files or keys. You'll see a result such as <b>24/24 passed</b>.</p>
+          <p>After a run, LLMVibeCheck takes the code from the final answer and runs it against the task's hidden tests, in a safe sandbox that can't reach your files or keys. You'll see a result such as <b>24/24 passed</b>.</p>
           <ul className="list-disc space-y-1 pl-5">
             <li><b>All tests pass</b>: the run is marked <b>Complete</b>.</li>
             <li><b>Some pass</b>: <b>Partial</b>.</li>
             <li><b>None pass</b>, or the code doesn't run at all: <b>Failed</b>.</li>
           </ul>
-          <p>Tests are the strongest signal LLMSquad has, because they check facts, not opinions. When a task has tests, they decide whether the run is complete.</p>
+          <p>Tests are the strongest signal LLMVibeCheck has, because they check facts, not opinions. When a task has tests, they decide whether the run is complete.</p>
           <Note kind="tech">
             <p>Tests live in the task's <Code>test_cases</Code> field, in one of two forms:</p>
             <p className="mt-2"><b>pytest source</b>: <Code>{`{"code": "from solution import evaluate\\ndef test_add(): assert evaluate('1+2') == 3"}`}</Code>. Each test function counts once; parametrized tests count once per case. The squad's code is saved as <Code>solution.py</Code>.</p>
@@ -304,7 +304,7 @@ export default function Docs() {
         </Section>
 
         <Section id="costs" title="Costs and tokens" lead="You pay the model companies (through OpenRouter) for the tokens your squads use.">
-          <p>Every model has a price per million tokens read (input) and written (output). Prices are shown next to each model in the model list. LLMSquad adds up the real cost of every step and shows it everywhere: on each box, on the run page, and on Compare.</p>
+          <p>Every model has a price per million tokens read (input) and written (output). Prices are shown next to each model in the model list. LLMVibeCheck adds up the real cost of every step and shows it everywhere: on each box, on the run page, and on Compare.</p>
           <Table head={["Typical", "Rough cost"]} rows={[
             ["A small model running a 3-step squad", "under 1 cent"],
             ["A mid-size model running a 3-step squad", "2–5 cents"],
@@ -315,7 +315,7 @@ export default function Docs() {
 
         <Section id="help" title="Troubleshooting">
           <Table head={["You see", "What it means and what to do"]} rows={[
-            ["“The backend isn't reachable” on the home page", "The server isn't running. Ask whoever set up LLMSquad to start it (it runs on port 8000)."],
+            ["“The backend isn't reachable” on the home page", "The server isn't running. Ask whoever set up LLMVibeCheck to start it (it runs on port 8000)."],
             ["“The database isn't” on the home page", "The database has stopped, often after the computer slept. In a terminal run: docker start squad-db"],
             ["“out of OpenRouter credits” / error 402", "The account that pays for the models is empty. Top it up at openrouter.ai/credits, then run again."],
             ["A step says “no answer: the model used its whole token budget on reasoning”", "Some models think before answering and ran out of space. Raise that step's answer length limit, e.g. to 6000."],
@@ -330,4 +330,5 @@ export default function Docs() {
     </main>
   );
 }
+
 

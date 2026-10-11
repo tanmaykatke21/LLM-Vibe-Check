@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* LLMSquad: clean light workbench. One accent (indigo); colour otherwise belongs to the AI companies. */
+/* LLMVibeCheck: clean light workbench. One accent (indigo); colour otherwise belongs to the AI companies. */
 :root { color-scheme: light; }
 
 @theme {
@@ -48,3 +48,4 @@
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 /* theme v2 */
+

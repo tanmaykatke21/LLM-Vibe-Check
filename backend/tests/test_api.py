@@ -109,3 +109,9 @@ def test_delete_is_refused_when_something_depends_on_it(monkeypatch, path, count
 def test_delete_works_when_unused(monkeypatch, path):
     db = FakeDB([("count(*)", {"c": 0})]); use_db(monkeypatch, db)
     assert client.delete(path).json() == {"ok": True} and len(db.writes("delete from")) == 1
+
+def test_cors_allows_configured_origin_only():
+    ok = client.options("/models", headers={"Origin": "http://localhost:3000", "Access-Control-Request-Method": "GET"})
+    bad = client.options("/models", headers={"Origin": "https://evil.example", "Access-Control-Request-Method": "GET"})
+    assert ok.headers.get("access-control-allow-origin") == "http://localhost:3000"
+    assert "access-control-allow-origin" not in bad.headers

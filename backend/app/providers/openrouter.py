@@ -23,7 +23,7 @@ class OpenRouterProvider(Provider):
         if params.get("reasoning_effort"):
             body["reasoning"] = {"effort": str(params["reasoning_effort"])}
         headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                   "HTTP-Referer": "https://llmsquad.local", "X-Title": "LLMSquad"}
+                   "HTTP-Referer": "https://llmvibecheck.local", "X-Title": "LLMVibeCheck"}
         t0 = time.perf_counter()
         async with httpx.AsyncClient(timeout=NODE_TIMEOUT_S) as c:
             r = await c.post(URL, json=body, headers=headers)

@@ -1,4 +1,4 @@
-# LLMSquad (working name)
+# LLMVibeCheck
 
 **Which AI team should do this job?** Build a squad of models (Claude, Gemini, GPT, open-weight, plus ElevenLabs tools), wire who talks to whom, run the same task on several squads, and see which one wins on quality, cost, time and human effort.
 

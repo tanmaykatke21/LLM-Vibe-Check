@@ -3,10 +3,15 @@ from pathlib import Path
 import psycopg
 from app.config import DATABASE_URL
 
-def main():
+def apply(url: str = DATABASE_URL) -> None:
+    """Create/upgrade all tables. Idempotent: every statement in schema.sql uses IF NOT EXISTS."""
     sql = (Path(__file__).parent / "schema.sql").read_text()
-    with psycopg.connect(DATABASE_URL, autocommit=True) as conn:
+    with psycopg.connect(url, autocommit=True) as conn:
         conn.execute(sql)
+
+def main():
+    apply()
+    with psycopg.connect(DATABASE_URL, autocommit=True) as conn:
         tables = [r[0] for r in conn.execute(
             "select tablename from pg_tables where schemaname='public' order by 1")]
         hyper = [r[0] for r in conn.execute(

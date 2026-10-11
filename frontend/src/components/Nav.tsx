@@ -14,7 +14,7 @@ export default function Nav() {
           <span className="rounded-[2px] bg-[#C2541B]" /><span className="rounded-[2px] bg-[#0E8A61]" />
           <span className="rounded-[2px] bg-[#2563EB]" /><span className="rounded-[2px] bg-white/80" />
         </span>
-        LLMSquad
+        LLMVibeCheck
       </Link>
       <div className="flex h-full items-stretch gap-1 text-[13px]">
         {LINKS.map(([href, label]) => {
@@ -27,4 +27,5 @@ export default function Nav() {
     </nav>
   );
 }
+
 

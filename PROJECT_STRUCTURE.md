@@ -1,8 +1,8 @@
-# LLMSquad — Project Structure (working name)
+# LLMVibeCheck — Project Structure
 
 > **Problem statement:** Which AI team should do this job? Task-specific evaluation of multi-model AI squads.
 >
-> Teams now build AI systems from several models playing roles like planner, executor and verifier, but every leaderboard ranks single models on generic benchmarks. LLMSquad lets a user assemble squads of models (Claude, Gemini, OpenAI, open-weight models, plus non-LLM tools like ElevenLabs), wire how they talk to each other, run the same task on every squad, and see which squad performs best for the cost.
+> Teams now build AI systems from several models playing roles like planner, executor and verifier, but every leaderboard ranks single models on generic benchmarks. LLMVibeCheck lets a user assemble squads of models (Claude, Gemini, OpenAI, open-weight models, plus non-LLM tools like ElevenLabs), wire how they talk to each other, run the same task on every squad, and see which squad performs best for the cost.
 
 Status: design only. Nothing is implemented yet. Product name is not final.
 
